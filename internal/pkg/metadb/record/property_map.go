@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	pb "github.com/googleforgames/open-saves/api"
+	log "github.com/sirupsen/logrus"
 )
 
 // PropertyMap represents user-defined custom properties.
@@ -105,6 +106,10 @@ func (m *PropertyMap) Load(ps []datastore.Property) error {
 	for _, v := range ps {
 		var newValue = new(PropertyValue)
 		t := reflect.TypeOf(v.Value)
+		if t == nil {
+			log.Warnf("Nil type not supported for value with name: %s", v.Name)
+			continue
+		}
 		switch t.Kind() {
 		case reflect.Bool:
 			newValue.Type = pb.Property_BOOLEAN
